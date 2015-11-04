@@ -63,11 +63,13 @@ int read_column_numbers(int columns[], int max)
     /*
      * 确认已经读取的标号为偶数个，因为它们是以对的形式出现的
      */
+#if 0
     if (num % 2 != 0)
     {
         puts("Last column number is not paired.");
         exit(EXIT_FAILURE);
     }
+#endif
 
     /*
      * 丢弃该行中包含最后一个数字的那部分内容
@@ -87,6 +89,7 @@ void rearrange(char *output, char const *input, int n_columns, int const columns
     int col;            /*columns 数组的下标*/
     int output_col;     /*输出列计数器*/
     int len;            /*输入行的长度*/
+    int nchars;
 
     len = strlen(input);
     output_col = 0;
@@ -96,13 +99,16 @@ void rearrange(char *output, char const *input, int n_columns, int const columns
      */
     for (col = 0; col < n_columns; col +=2)
     {
-        int nchars = columns[col + 1] - columns[col] + 1;
-
         /*
          * 如果输入行结束或输出行数组已满，就结束任务
          */
-        if (columns[col] >= len || output_col == MAX_INPUT -1)
+        if ((columns[col] >= len && columns[col + 1] >= len) || output_col == MAX_INPUT -1)
             break;
+
+        if ( col + 1 < n_columns)
+            nchars = columns[col + 1] - columns[col] + 1;
+        else
+            nchars = len - columns[col + 1];
 
         /*
          * 如果输出行空间不够，只复制可以容纳的数据
